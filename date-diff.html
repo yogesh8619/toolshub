@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Difference Calculator | ToolKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .calculator-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .date-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .date-input {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .today-btn {
+            background: none;
+            border: none;
+            color: #4285f4;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .today-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .results {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4285f4;
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .additional-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .weekday {
+            font-weight: bold;
+            color: #4285f4;
+        }
+        
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="calculator-container">
+            <h2>Date Difference Calculator</h2>
+            <p>Calculate the duration between two dates</p>
+            
+            <div class="date-inputs">
+                <div class="date-input">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate">
+                    <button class="today-btn" id="startTodayBtn">
+                        <i class="fas fa-calendar-day"></i> Set to Today
+                    </button>
+                </div>
+                
+                <div class="date-input">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate">
+                    <button class="today-btn" id="endTodayBtn">
+                        <i class="fas fa-calendar-day"></i> Set to Today
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn" id="calculateBtn">Calculate Difference</button>
+            
+            <div class="results" id="results" style="display: none;">
+                <h3>Date Difference Result</h3>
+                <div id="summaryText"></div>
+                
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-value" id="yearsResult">0</div>
+                        <div class="result-label">Years</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="monthsResult">0</div>
+                        <div class="result-label">Months</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="daysResult">0</div>
+                        <div class="result-label">Days</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="weeksResult">0</div>
+                        <div class="result-label">Weeks</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="hoursResult">0</div>
+                        <div class="result-label">Hours</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="minutesResult">0</div>
+                        <div class="result-label">Minutes</div>
+                    </div>
+                </div>
+                
+                <div class="additional-info">
+                    <p><strong>Start Date:</strong> <span id="startWeekday" class="weekday"></span>, <span id="startDateFull"></span></p>
+                    <p><strong>End Date:</strong> <span id="endWeekday" class="weekday"></span>, <span id="endDateFull"></span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="author-info">
+                <h3>About the Author</h3>
+                <p>John Doe</p>
+                <p>Web Developer & Tool Creator</p>
+                <p>contact@example.com</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // DOM Elements
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const startTodayBtn = document.getElementById('startTodayBtn');
+        const endTodayBtn = document.getElementById('endTodayBtn');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const summaryText = document.getElementById('summaryText');
+        const yearsResult = document.getElementById('yearsResult');
+        const monthsResult = document.getElementById('monthsResult');
+        const daysResult = document.getElementById('daysResult');
+        const weeksResult = document.getElementById('weeksResult');
+        const hoursResult = document.getElementById('hoursResult');
+        const minutesResult = document.getElementById('minutesResult');
+        const startWeekday = document.getElementById('startWeekday');
+        const endWeekday = document.getElementById('endWeekday');
+        const startDateFull = document.getElementById('startDateFull');
+        const endDateFull = document.getElementById('endDateFull');
+        
+        // Initialize with today's date
+        const today = new Date();
+        const todayFormatted = formatDateForInput(today);
+        startDateInput.value = todayFormatted;
+        endDateInput.value = todayFormatted;
+        
+        // Event Listeners
+        startTodayBtn.addEventListener('click', () => {
+            startDateInput.value = todayFormatted;
+            calculateDifference();
+        });
+        
+        endTodayBtn.addEventListener('click', () => {
+            endDateInput.value = todayFormatted;
+            calculateDifference();
+        });
+        
+        calculateBtn.addEventListener('click', calculateDifference);
+        
+        // Calculate when dates change
+        startDateInput.addEventListener('change', calculateDifference);
+        endDateInput.addEventListener('change', calculateDifference);
+        
+        // Initial calculation
+        calculateDifference();
+        
+        // Functions
+        function calculateDifference() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            // Swap dates if end date is before start date
+            if (endDate < startDate) {
+                [startDateInput.value, endDateInput.value] = [endDateInput.value, startDateInput.value];
+                return calculateDifference();
+            }
+            
+            // Calculate difference
+            const diffInMs = endDate - startDate;
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+            
+            // Calculate years, months, days
+            let years = endDate.getFullYear() - startDate.getFullYear();
+            let months = endDate.getMonth() - startDate.getMonth();
+            let days = endDate.getDate() - startDate.getDate();
+            
+            if (days < 0) {
+                months--;
+                // Get days in previous month
+                const prevMonthLastDay = new Date(
+                    endDate.getFullYear(),
+                    endDate.getMonth(),
+                    0
+                ).getDate();
+                days += prevMonthLastDay;
+            }
+            
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            // Update results
+            yearsResult.textContent = years;
+            monthsResult.textContent = months;
+            daysResult.textContent = days;
+            weeksResult.textContent = Math.floor(diffInDays / 7);
+            hoursResult.textContent = diffInHours;
+            minutesResult.textContent = diffInMinutes;
+            
+            // Update summary text
+            let summaryParts = [];
+            if (years > 0) summaryParts.push(`${years} year${years !== 1 ? 's' : ''}`);
+            if (months > 0) summaryParts.push(`${months} month${months !== 1 ? 's' : ''}`);
+            if (days > 0) summaryParts.push(`${days} day${days !== 1 ? 's' : ''}`);
+            
+            if (summaryParts.length === 0) {
+                summaryText.innerHTML = "The dates are the same.";
+            } else {
+                summaryText.innerHTML = `The difference is <strong>${summaryParts.join(', ')}</strong>`;
+            }
+            
+            // Update additional info
+            startWeekday.textContent = getWeekdayName(startDate);
+            endWeekday.textContent = getWeekdayName(endDate);
+            startDateFull.textContent = formatDateFull(startDate);
+            endDateFull.textContent = formatDateFull(endDate);
+            
+            // Show results
+            resultsDiv.style.display = 'block';
+        }
+        
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function getWeekdayName(date) {
+            const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return weekdays[date.getDay()];
+        }
+        
+        function formatDateFull(date) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            return `${month} ${day}, ${year}`;
+        }
+    </script>
+</body>
+</html>

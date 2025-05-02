@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Word Converter | ToolKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .converter-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #4285f4;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #f8f9fa;
+        }
+        .upload-area i {
+            font-size: 50px;
+            color: #4285f4;
+            margin-bottom: 15px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #3367d6;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: #4285f4;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="converter-container">
+            <h2>PDF to Word Converter</h2>
+            <p>Convert your PDF documents to editable Word files</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-file-pdf"></i>
+                <h3>Drag & Drop PDF File Here</h3>
+                <p>or</p>
+                <button class="btn" id="selectFileBtn">Select PDF File</button>
+                <input type="file" id="fileInput" accept=".pdf">
+            </div>
+            
+            <div class="options">
+                <label>
+                    <input type="checkbox" id="preserveFormatting" checked>
+                    Preserve Formatting
+                </label>
+                <button class="btn" id="convertBtn" disabled>Convert to Word</button>
+            </div>
+            
+            <div class="status" id="status">
+                <p id="statusText">Converting...</p>
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+            </div>
+            
+            <a href="#" class="btn" id="downloadBtn" style="display: none; margin-top: 20px;">
+                <i class="fas fa-download"></i> Download Word File
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="author-info">
+                <h3>About the Author</h3>
+                <p>John Doe</p>
+                <p>Web Developer & Tool Creator</p>
+                <p>contact@example.com</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const statusDiv = document.getElementById('status');
+        const statusText = document.getElementById('statusText');
+        const progressBar = document.getElementById('progressBar');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        let selectedFile = null;
+        
+        // Handle file selection
+        selectFileBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                selectedFile = e.target.files[0];
+                uploadArea.innerHTML = `
+                    <i class="fas fa-file-alt"></i>
+                    <h3>${selectedFile.name}</h3>
+                    <p>${(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                `;
+                convertBtn.disabled = false;
+            }
+        });
+        
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            
+            if (e.dataTransfer.files.length) {
+                selectedFile = e.dataTransfer.files[0];
+                if (selectedFile.type === 'application/pdf') {
+                    uploadArea.innerHTML = `
+                        <i class="fas fa-file-alt"></i>
+                        <h3>${selectedFile.name}</h3>
+                        <p>${(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                    `;
+                    convertBtn.disabled = false;
+                } else {
+                    alert('Please upload a PDF file');
+                }
+            }
+        });
+        
+        // Convert button click
+        convertBtn.addEventListener('click', () => {
+            if (!selectedFile) return;
+            
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Converting...';
+            
+            // Simulate conversion progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusText.textContent = 'Conversion Complete!';
+                    downloadBtn.style.display = 'inline-block';
+                    
+                    // In a real app, you would have the actual converted file here
+                    // This is just a simulation
+                    downloadBtn.href = URL.createObjectURL(new Blob(['Simulated Word file content'], { type: 'application/msword' }));
+                    downloadBtn.download = selectedFile.name.replace('.pdf', '.docx');
+                }
+            }, 200);
+        });
+    </script>
+</body>
+</html>

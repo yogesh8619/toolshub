@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interest Calculator | ToolKit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --primary-dark: #3367d6;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-color: #ddd;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Calculator Card */
+        .calculator-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .calculator-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .calculator-description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* Form Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+
+        /* Radio Buttons */
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin: 15px 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Date Inputs */
+        .date-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .today-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 0;
+        }
+
+        .today-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Time Options */
+        .time-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .time-value-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .time-value-group .form-control {
+            flex: 2;
+        }
+
+        .time-value-group select {
+            flex: 1;
+        }
+
+        /* Button */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results */
+        .results-section {
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .results-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .formula-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+
+        .formula-section p {
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #eee;
+        }
+
+        .footer-column p {
+            color: #bbb;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .time-value-group {
+                flex-direction: column;
+            }
+
+            .calculator-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .date-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="calculator-card">
+            <h1 class="calculator-title">Interest Calculator</h1>
+            <p class="calculator-description">Calculate simple or compound interest with exact time periods</p>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="principal" class="form-label">Principal Amount ($)</label>
+                    <input type="number" id="principal" class="form-control" min="0" step="0.01" value="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rate" class="form-label">Annual Interest Rate (%)</label>
+                    <input type="number" id="rate" class="form-control" min="0" step="0.01" value="5">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Interest Type</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="simpleInterest" name="interestType" value="simple" checked>
+                        <label for="simpleInterest">Simple Interest</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="compoundInterest" name="interestType" value="compound">
+                        <label for="compoundInterest">Compound Interest</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="compoundFrequency" style="display: none;">
+                <label for="frequency" class="form-label">Compounding Frequency</label>
+                <select id="frequency" class="form-control">
+                    <option value="1">Annually</option>
+                    <option value="2">Semi-Annually</option>
+                    <option value="4">Quarterly</option>
+                    <option value="12" selected>Monthly</option>
+                    <option value="52">Weekly</option>
+                    <option value="365">Daily</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Time Period Calculation</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="useDates" name="timeMethod" value="dates" checked>
+                        <label for="useDates">Use Date Range</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="useYears" name="timeMethod" value="years">
+                        <label for="useYears">Enter Time Period</label>
+                    </div>
+                </div>
+                
+                <div id="dateInputs" class="date-inputs">
+                    <div class="form-group">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" id="startDate" class="form-control">
+                        <button class="today-btn" id="startTodayBtn">
+                            <i class="fas fa-calendar-day"></i> Set to Today
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" id="endDate" class="form-control">
+                        <button class="today-btn" id="endTodayBtn">
+                            <i class="fas fa-calendar-day"></i> Set to Today
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="timeValueGroup" style="display: none;">
+                    <div class="time-value-group">
+                        <input type="number" id="timeValue" class="form-control" min="0" step="0.01" value="1">
+                        <select id="timeUnit" class="form-control">
+                            <option value="days">Days</option>
+                            <option value="weeks">Weeks</option>
+                            <option value="months">Months</option>
+                            <option value="years" selected>Years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" id="calculateBtn">Calculate Interest</button>
+            
+            <div class="results-section" id="results">
+                <h3 class="results-title">Calculation Results</h3>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Principal Amount</div>
+                        <div class="result-value" id="resultPrincipal">$1,000.00</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Interest Earned</div>
+                        <div class="result-value" id="resultInterest">$50.00</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Total Amount</div>
+                        <div class="result-value" id="resultTotal">$1,050.00</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Time Period</div>
+                        <div class="result-value" id="resultTime">1 year</div>
+                    </div>
+                </div>
+                
+                <div class="formula-section" id="detailedResults">
+                    <p><strong>Simple Interest Formula:</strong> I = P × r × t</p>
+                    <p>I = $1,000.00 × 5% × 1 year = $50.00</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>ToolKit</h3>
+                <p>Your complete online toolkit for everyday calculations and conversions.</p>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <p><a href="#" style="color: #bbb; text-decoration: none;">All Tools</a></p>
+                <p><a href="#" style="color: #bbb; text-decoration: none;">Categories</a></p>
+                <p><a href="#" style="color: #bbb; text-decoration: none;">About Us</a></p>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p>Email: contact@example.com</p>
+                <p>Twitter: @ToolKit</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // DOM Elements
+        const principalInput = document.getElementById('principal');
+        const rateInput = document.getElementById('rate');
+        const simpleInterestRadio = document.getElementById('simpleInterest');
+        const compoundInterestRadio = document.getElementById('compoundInterest');
+        const compoundFrequencyDiv = document.getElementById('compoundFrequency');
+        const frequencySelect = document.getElementById('frequency');
+        const useDatesRadio = document.getElementById('useDates');
+        const useYearsRadio = document.getElementById('useYears');
+        const dateInputsDiv = document.getElementById('dateInputs');
+        const timeValueGroup = document.getElementById('timeValueGroup');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const startTodayBtn = document.getElementById('startTodayBtn');
+        const endTodayBtn = document.getElementById('endTodayBtn');
+        const timeValueInput = document.getElementById('timeValue');
+        const timeUnitSelect = document.getElementById('timeUnit');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultPrincipal = document.getElementById('resultPrincipal');
+        const resultInterest = document.getElementById('resultInterest');
+        const resultTotal = document.getElementById('resultTotal');
+        const resultTime = document.getElementById('resultTime');
+        const detailedResults = document.getElementById('detailedResults');
+        
+        // Initialize with today's date
+        const today = new Date();
+        const todayFormatted = formatDateForInput(today);
+        startDateInput.value = todayFormatted;
+        
+        // Set end date to 1 year from today
+        const oneYearLater = new Date(today);
+        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        endDateInput.value = formatDateForInput(oneYearLater);
+        
+        // Event Listeners
+        simpleInterestRadio.addEventListener('change', toggleCompoundFrequency);
+        compoundInterestRadio.addEventListener('change', toggleCompoundFrequency);
+        
+        useDatesRadio.addEventListener('change', toggleTimeMethod);
+        useYearsRadio.addEventListener('change', toggleTimeMethod);
+        
+        startTodayBtn.addEventListener('click', () => {
+            startDateInput.value = todayFormatted;
+            calculateInterest();
+        });
+        
+        endTodayBtn.addEventListener('click', () => {
+            endDateInput.value = todayFormatted;
+            calculateInterest();
+        });
+        
+        [principalInput, rateInput, frequencySelect, startDateInput, endDateInput, 
+         timeValueInput, timeUnitSelect].forEach(el => {
+            el.addEventListener('change', calculateInterest);
+            el.addEventListener('input', calculateInterest);
+        });
+        
+        calculateBtn.addEventListener('click', calculateInterest);
+        
+        // Initial calculation
+        toggleCompoundFrequency();
+        toggleTimeMethod();
+        calculateInterest();
+        
+        // Functions
+        function toggleCompoundFrequency() {
+            if (compoundInterestRadio.checked) {
+                compoundFrequencyDiv.style.display = 'block';
+            } else {
+                compoundFrequencyDiv.style.display = 'none';
+            }
+            calculateInterest();
+        }
+        
+        function toggleTimeMethod() {
+            if (useDatesRadio.checked) {
+                dateInputsDiv.style.display = 'grid';
+                timeValueGroup.style.display = 'none';
+            } else {
+                dateInputsDiv.style.display = 'none';
+                timeValueGroup.style.display = 'block';
+            }
+            calculateInterest();
+        }
+        
+        function calculateInterest() {
+            const principal = parseFloat(principalInput.value) || 0;
+            const rate = parseFloat(rateInput.value) || 0;
+            const isSimpleInterest = simpleInterestRadio.checked;
+            const frequency = parseInt(frequencySelect.value) || 1;
+            
+            let timeInYears, timeDescription;
+            
+            if (useDatesRadio.checked) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+                
+                if (endDate < startDate) {
+                    [startDateInput.value, endDateInput.value] = [endDateInput.value, startDateInput.value];
+                    return calculateInterest();
+                }
+                
+                const diffInMs = endDate - startDate;
+                timeInYears = diffInMs / (1000 * 60 * 60 * 24 * 365);
+                
+                // Calculate full years, months, days
+                let years = endDate.getFullYear() - startDate.getFullYear();
+                let months = endDate.getMonth() - startDate.getMonth();
+                let days = endDate.getDate() - startDate.getDate();
+                
+                if (days < 0) {
+                    months--;
+                    const prevMonthLastDay = new Date(
+                        endDate.getFullYear(),
+                        endDate.getMonth(),
+                        0
+                    ).getDate();
+                    days += prevMonthLastDay;
+                }
+                
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+                
+                timeDescription = [];
+                if (years > 0) timeDescription.push(`${years} year${years !== 1 ? 's' : ''}`);
+                if (months > 0) timeDescription.push(`${months} month${months !== 1 ? 's' : ''}`);
+                if (days > 0) timeDescription.push(`${days} day${days !== 1 ? 's' : ''}`);
+                
+                if (timeDescription.length === 0) {
+                    timeDescription = ['0 days'];
+                }
+                
+                timeDescription = timeDescription.join(', ');
+            } else {
+                const timeValue = parseFloat(timeValueInput.value) || 0;
+                const timeUnit = timeUnitSelect.value;
+                
+                // Convert to years
+                switch(timeUnit) {
+                    case 'days': timeInYears = timeValue / 365; break;
+                    case 'weeks': timeInYears = timeValue / 52; break;
+                    case 'months': timeInYears = timeValue / 12; break;
+                    case 'years': timeInYears = timeValue; break;
+                }
+                
+                timeDescription = `${timeValue} ${timeUnit}`;
+                if (timeValue !== 1) timeDescription += 's'; // pluralize
+            }
+            
+            let interest, total;
+            
+            if (isSimpleInterest) {
+                // Simple Interest formula: I = P * r * t
+                interest = principal * (rate / 100) * timeInYears;
+                total = principal + interest;
+                
+                detailedResults.innerHTML = `
+                    <p><strong>Simple Interest Formula:</strong> I = P × r × t</p>
+                    <p>I = ${formatCurrency(principal)} × ${rate}% × ${timeInYears.toFixed(4)} years = ${formatCurrency(interest)}</p>
+                `;
+            } else {
+                // Compound Interest formula: A = P * (1 + r/n)^(n*t)
+                const n = frequency;
+                const compoundRate = rate / 100;
+                total = principal * Math.pow(1 + (compoundRate / n), n * timeInYears);
+                interest = total - principal;
+                
+                const freqName = frequencySelect.options[frequencySelect.selectedIndex].text;
+                
+                detailedResults.innerHTML = `
+                    <p><strong>Compound Interest Formula:</strong> A = P × (1 + r/n)<sup>n×t</sup></p>
+                    <p>A = ${formatCurrency(principal)} × (1 + ${rate}%/${n})<sup>${n}×${timeInYears.toFixed(4)}</sup> = ${formatCurrency(total)}</p>
+                    <p>Compounding Frequency: ${freqName}</p>
+                `;
+            }
+            
+            // Update results
+            resultPrincipal.textContent = formatCurrency(principal);
+            resultInterest.textContent = formatCurrency(interest);
+            resultTotal.textContent = formatCurrency(total);
+            resultTime.textContent = timeDescription;
+        }
+        
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+        
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+    </script>
+</body>
+</html>

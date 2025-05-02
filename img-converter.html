@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter | ToolKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .converter-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #4285f4;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #f8f9fa;
+        }
+        .upload-area i {
+            font-size: 50px;
+            color: #4285f4;
+            margin-bottom: 15px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+        }
+        .options {
+            margin: 20px 0;
+        }
+        .option-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .download-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="converter-container">
+            <h2>Image Converter</h2>
+            <p>Convert images between different formats</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-image"></i>
+                <h3>Drag & Drop Image Here</h3>
+                <p>or</p>
+                <button class="btn" id="selectFileBtn">Select Image File</button>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            
+            <div class="preview">
+                <img id="imagePreview" alt="Image Preview">
+            </div>
+            
+            <div class="options">
+                <div class="option-group">
+                    <label for="outputFormat">Output Format:</label>
+                    <select id="outputFormat">
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                        <option value="bmp">BMP</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="quality">Quality: <span id="qualityValue">80</span>%</label>
+                    <input type="range" id="quality" min="1" max="100" value="80">
+                </div>
+                
+                <div class="option-group">
+                    <label for="resize">Resize (width): <span id="resizeValue">Original</span></label>
+                    <input type="range" id="resize" min="100" max="2000" step="50" value="0">
+                </div>
+            </div>
+            
+            <div class="download-options">
+                <button class="btn" id="convertBtn" disabled>Convert Image</button>
+                <button class="btn" id="downloadBtn" disabled>Download</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="author-info">
+                <h3>About the Author</h3>
+                <p>John Doe</p>
+                <p>Web Developer & Tool Creator</p>
+                <p>contact@example.com</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const outputFormat = document.getElementById('outputFormat');
+        const quality = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const resize = document.getElementById('resize');
+        const resizeValue = document.getElementById('resizeValue');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        let originalImage = null;
+        let convertedImageBlob = null;
+        
+        // Update quality display
+        quality.addEventListener('input', () => {
+            qualityValue.textContent = quality.value;
+        });
+        
+        // Update resize display
+        resize.addEventListener('input', () => {
+            if (resize.value === '0') {
+                resizeValue.textContent = 'Original';
+            } else {
+                resizeValue.textContent = `${resize.value}px`;
+            }
+        });
+        
+        // Handle file selection
+        selectFileBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+        
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            
+            if (e.dataTransfer.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    handleImageFile(file);
+                } else {
+                    alert('Please upload an image file');
+                }
+            }
+        });
+        
+        // Process image file
+        function handleImageFile(file) {
+            originalImage = file;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                convertBtn.disabled = false;
+                
+                // Set original width as max value for resize slider
+                const img = new Image();
+                img.onload = function() {
+                    resize.max = this.width;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            uploadArea.innerHTML = `
+                <i class="fas fa-file-image"></i>
+                <h3>${file.name}</h3>
+                <p>${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            `;
+        }
+        
+        // Convert image
+        convertBtn.addEventListener('click', () => {
+            if (!originalImage) return;
+            
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate new dimensions if resizing
+                let width = img.width;
+                let height = img.height;
+                
+                if (resize.value > 0) {
+                    const ratio = resize.value / width;
+                    width = resize.value;
+                    height = height * ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw image to canvas
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to selected format
+                let mimeType;
+                switch(outputFormat.value) {
+                    case 'jpeg': mimeType = 'image/jpeg'; break;
+                    case 'png': mimeType = 'image/png'; break;
+                    case 'webp': mimeType = 'image/webp'; break;
+                    case 'bmp': mimeType = 'image/bmp'; break;
+                    default: mimeType = 'image/jpeg';
+                }
+                
+                // Convert to blob with specified quality (for formats that support it)
+                canvas.toBlob((blob) => {
+                    convertedImageBlob = blob;
+                    downloadBtn.disabled = false;
+                    
+                    // Update preview with converted image
+                    const url = URL.createObjectURL(blob);
+                    imagePreview.src = url;
+                    
+                    alert('Conversion complete! Click Download to save the image.');
+                }, mimeType, quality.value / 100);
+            };
+            
+            img.src = URL.createObjectURL(originalImage);
+        });
+        
+        // Download converted image
+        downloadBtn.addEventListener('click', () => {
+            if (!convertedImageBlob) return;
+            
+            const link = document.createElement('a');
+            link.download = `converted.${outputFormat.value}`;
+            link.href = URL.createObjectURL(convertedImageBlob);
+            link.click();
+        });
+    </script>
+</body>
+</html>

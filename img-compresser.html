@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor | ToolKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .compressor-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .upload-area {
+            border: 2px dashed #4285f4;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #f8f9fa;
+        }
+        
+        .upload-area i {
+            font-size: 50px;
+            color: #4285f4;
+            margin-bottom: 15px;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+        
+        .image-preview {
+            text-align: center;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        
+        .image-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .comparison {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .compression-stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="compressor-container">
+            <h2>Image Compressor</h2>
+            <p>Reduce image file size while maintaining quality</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-images"></i>
+                <h3>Drag & Drop Image Here</h3>
+                <p>or</p>
+                <button class="btn" id="selectFileBtn">Select Image File</button>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            
+            <div class="preview-container" id="previewContainer" style="display: none;">
+                <div class="image-preview">
+                    <h3>Original Image</h3>
+                    <img id="originalPreview" alt="Original Preview">
+                    <div class="image-info">
+                        <span id="originalSize">0 KB</span> • 
+                        <span id="originalDimensions">0×0</span>
+                    </div>
+                </div>
+                <div class="image-preview">
+                    <h3>Compressed Image</h3>
+                    <img id="compressedPreview" alt="Compressed Preview">
+                    <div class="image-info">
+                        <span id="compressedSize">0 KB</span> • 
+                        <span id="compressedDimensions">0×0</span> •
+                        <span id="compressionRatio">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls" id="controls" style="display: none;">
+                <div class="control-group">
+                    <label for="quality">Quality: <span id="qualityValue">70</span>%</label>
+                    <input type="range" id="quality" min="1" max="100" value="70">
+                    <div class="comparison">
+                        <span>Smaller file</span>
+                        <span>Better quality</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="maxWidth">Max Width (px): <span id="widthValue">Original</span></label>
+                    <input type="range" id="maxWidth" min="100" max="2000" step="50" value="0">
+                </div>
+            </div>
+            
+            <div class="compression-stats" id="stats" style="display: none;">
+                <p>File size reduced by <strong id="reductionPercent">0%</strong> • 
+                From <strong id="originalSizeStat">0 KB</strong> to <strong id="compressedSizeStat">0 KB</strong></p>
+            </div>
+            
+            <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button class="btn" id="compressBtn">Compress Again</button>
+                <button class="btn" id="downloadBtn">Download Compressed Image</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="author-info">
+                <h3>About the Author</h3>
+                <p>John Doe</p>
+                <p>Web Developer & Tool Creator</p>
+                <p>contact@example.com</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        // DOM Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectFileBtn = document.getElementById('selectFileBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const originalPreview = document.getElementById('originalPreview');
+        const compressedPreview = document.getElementById('compressedPreview');
+        const originalSize = document.getElementById('originalSize');
+        const compressedSize = document.getElementById('compressedSize');
+        const originalDimensions = document.getElementById('originalDimensions');
+        const compressedDimensions = document.getElementById('compressedDimensions');
+        const compressionRatio = document.getElementById('compressionRatio');
+        const quality = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const maxWidth = document.getElementById('maxWidth');
+        const widthValue = document.getElementById('widthValue');
+        const controls = document.getElementById('controls');
+        const stats = document.getElementById('stats');
+        const actionButtons = document.getElementById('actionButtons');
+        const compressBtn = document.getElementById('compressBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const reductionPercent = document.getElementById('reductionPercent');
+        const originalSizeStat = document.getElementById('originalSizeStat');
+        const compressedSizeStat = document.getElementById('compressedSizeStat');
+        
+        // State
+        let originalImage = null;
+        let originalImageFile = null;
+        let compressedImageBlob = null;
+        
+        // Event Listeners
+        selectFileBtn.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            
+            if (e.dataTransfer.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    handleImageFile(file);
+                } else {
+                    alert('Please upload an image file');
+                }
+            }
+        });
+        
+        quality.addEventListener('input', () => {
+            qualityValue.textContent = quality.value;
+            if (originalImage) {
+                compressImage();
+            }
+        });
+        
+        maxWidth.addEventListener('input', () => {
+            if (maxWidth.value === '0') {
+                widthValue.textContent = 'Original';
+            } else {
+                widthValue.textContent = maxWidth.value;
+            }
+            if (originalImage) {
+                compressImage();
+            }
+        });
+        
+        compressBtn.addEventListener('click', compressImage);
+        
+        downloadBtn.addEventListener('click', () => {
+            if (!compressedImageBlob) return;
+            
+            const link = document.createElement('a');
+            const fileName = originalImageFile.name.replace(/\.[^/.]+$/, '') + '-compressed.jpg';
+            link.download = fileName;
+            link.href = URL.createObjectURL(compressedImageBlob);
+            link.click();
+        });
+        
+        // Functions
+        function handleImageFile(file) {
+            originalImageFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    // Display original image info
+                    originalPreview.src = e.target.result;
+                    originalDimensions.textContent = `${this.width}×${this.height}`;
+                    originalSize.textContent = formatFileSize(file.size);
+                    
+                    // Set max width slider
+                    maxWidth.max = this.width;
+                    maxWidth.value = this.width > 1000 ? 1000 : 0;
+                    widthValue.textContent = maxWidth.value === '0' ? 'Original' : maxWidth.value;
+                    
+                    // Show UI elements
+                    previewContainer.style.display = 'flex';
+                    controls.style.display = 'block';
+                    actionButtons.style.display = 'flex';
+                    
+                    // Compress the image
+                    compressImage();
+                };
+                originalImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            uploadArea.innerHTML = `
+                <i class="fas fa-file-image"></i>
+                <h3>${file.name}</h3>
+                <p>${formatFileSize(file.size)}</p>
+            `;
+        }
+        
+        function compressImage() {
+            if (!originalImage) return;
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions
+            let width = originalImage.width;
+            let height = originalImage.height;
+            
+            if (maxWidth.value > 0) {
+                const ratio = maxWidth.value / width;
+                width = maxWidth.value;
+                height = height * ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Draw image to canvas
+            ctx.drawImage(originalImage, 0, 0, width, height);
+            
+            // Convert to JPEG with specified quality
+            canvas.toBlob((blob) => {
+                compressedImageBlob = blob;
+                
+                // Display compressed image
+                const url = URL.createObjectURL(blob);
+                compressedPreview.src = url;
+                compressedDimensions.textContent = `${width}×${height}`;
+                compressedSize.textContent = formatFileSize(blob.size);
+                
+                // Calculate compression ratio
+                const ratio = 100 - Math.round((blob.size / originalImageFile.size) * 100);
+                compressionRatio.textContent = `${ratio}% smaller`;
+                
+                // Update stats
+                reductionPercent.textContent = `${ratio}%`;
+                originalSizeStat.textContent = formatFileSize(originalImageFile.size);
+                compressedSizeStat.textContent = formatFileSize(blob.size);
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+                
+            }, 'image/jpeg', quality.value / 100);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        }
+    </script>
+</body>
+</html>

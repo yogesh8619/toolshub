@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator | ToolKit</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        .qr-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .qr-result {
+            text-align: center;
+            margin: 30px 0;
+        }
+        #qrCode {
+            background: white;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            max-width: 100%;
+        }
+        .download-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .color-options {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .color-option {
+            display: flex;
+            align-items: center;
+        }
+        .color-option input {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="ToolKit Logo">
+                <h1>ToolKit</h1>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="qr-container">
+            <h2>QR Code Generator</h2>
+            <p>Create QR codes for URLs, text, contact info and more</p>
+            
+            <div class="input-group">
+                <label for="qrContent">Content to encode:</label>
+                <input type="text" id="qrContent" placeholder="https://example.com" value="https://example.com">
+            </div>
+            
+            <div class="input-group">
+                <label for="qrSize">Size:</label>
+                <select id="qrSize">
+                    <option value="100">100x100</option>
+                    <option value="150">150x150</option>
+                    <option value="200" selected>200x200</option>
+                    <option value="250">250x250</option>
+                    <option value="300">300x300</option>
+                </select>
+            </div>
+            
+            <div class="color-options">
+                <div class="color-option">
+                    <label>Foreground:</label>
+                    <input type="color" id="qrColor" value="#000000">
+                </div>
+                <div class="color-option">
+                    <label>Background:</label>
+                    <input type="color" id="qrBgColor" value="#ffffff">
+                </div>
+            </div>
+            
+            <button class="btn" id="generateBtn">Generate QR Code</button>
+            
+            <div class="qr-result">
+                <canvas id="qrCode"></canvas>
+            </div>
+            
+            <div class="download-options">
+                <button class="btn" id="downloadPNG">Download PNG</button>
+                <button class="btn" id="downloadSVG">Download SVG</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="author-info">
+                <h3>About the Author</h3>
+                <p>John Doe</p>
+                <p>Web Developer & Tool Creator</p>
+                <p>contact@example.com</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> ToolKit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
+        const qrContent = document.getElementById('qrContent');
+        const qrSize = document.getElementById('qrSize');
+        const qrColor = document.getElementById('qrColor');
+        const qrBgColor = document.getElementById('qrBgColor');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrCodeCanvas = document.getElementById('qrCode');
+        const downloadPNG = document.getElementById('downloadPNG');
+        const downloadSVG = document.getElementById('downloadSVG');
+        
+        // Generate QR code
+        function generateQRCode() {
+            const content = qrContent.value.trim();
+            if (!content) {
+                alert('Please enter content to encode');
+                return;
+            }
+            
+            QRCode.toCanvas(qrCodeCanvas, content, {
+                width: parseInt(qrSize.value),
+                color: {
+                    dark: qrColor.value,
+                    light: qrBgColor.value
+                }
+            }, (error) => {
+                if (error) console.error(error);
+            });
+        }
+        
+        // Download as PNG
+        downloadPNG.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = qrCodeCanvas.toDataURL('image/png');
+            link.click();
+        });
+        
+        // Download as SVG (using the library's SVG capabilities)
+        downloadSVG.addEventListener('click', () => {
+            const content = qrContent.value.trim();
+            if (!content) {
+                alert('Please enter content to encode');
+                return;
+            }
+            
+            QRCode.toString(content, {
+                type: 'svg',
+                color: {
+                    dark: qrColor.value,
+                    light: qrBgColor.value
+                }
+            }, (err, svg) => {
+                if (err) throw err;
+                
+                const blob = new Blob([svg], { type: 'image/svg+xml' });
+                const link = document.createElement('a');
+                link.download = 'qrcode.svg';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+        });
+        
+        // Generate on page load and button click
+        generateQRCode();
+        generateBtn.addEventListener('click', generateQRCode);
+        
+        // Regenerate when options change
+        [qrSize, qrColor, qrBgColor].forEach(el => {
+            el.addEventListener('change', generateQRCode);
+        });
+    </script>
+</body>
+</html>
